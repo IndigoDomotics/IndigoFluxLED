@@ -1,0 +1,107 @@
+
+<Devices>
+	<Device type="dimmer" id="WiFiRGBBulb">
+		<Name>WiFi RGB Light</Name>
+		<ConfigUI>
+		
+
+			<Field id="address" type="textfield" hidden="false" />
+			
+			<Field id="uniqueId" type="textfield" hidden="true" />
+			<!-- By default dimmer type devices automatically inherit these
+			device properties which describe the characteristics of a specific
+			dimmer instance:
+
+				SupportsColor:								True or False
+				-> SupportsRGB:								True or False (requires SupportsColor to be True)
+				-> SupportsWhite:							True or False (requires SupportsColor to be True)
+				   -> SupportsTwoWhiteLevels:				True or False (requires SupportsWhite to be True)
+				   -> SupportsTwoWhiteLevelsSimultaneously:	True or False (requires SupportsTwoWhiteLevels to be True)
+				   -> SupportsWhiteTemperature:				True or False (requires SupportsWhite to be True)
+				   -> SupportsRGBandWhiteSimultaneously:	True or False (requires SupportsRGB and SupportsWhite to be True)
+			
+			Plugins can update these properties either in device ConfigUI
+			(like below), or can update them from python by using the
+			dev.replacePluginPropsOnServer() method, most likely inside your
+			deviceStartComm method. Both will trigger the Indigo Server to
+			automatically rebuild the device's states list based on the needed
+			changes.
+
+			Two white level fields (SupportsTwoWhiteLevels) is used by some hardware
+			to mix cool and warm white levels. Other hardware provides this capability
+			by using a white temperature value (SupportsWhiteTemperature). The two
+			techniques are mutually exlcusive, so choosing to enable two white levels
+			will override (and not show) the white temperature UI.
+			-->
+			<Field id="SupportsColor" type="checkbox" hidden="true" defaultValue="true" />
+			<Field id="SupportsRGB" type="checkbox" hidden="true" defaultValue="true" />
+			<Field id="SupportsWhite" type="checkbox" hidden="true" defaultValue="true" />
+			<Field id="SupportsWhiteTemperature" type="checkbox" hidden="true" defaultValue="false" />
+			<Field id="SupportsRGBandWhiteSimultaneously" type="checkbox" hidden="true" defaultValue="false" />
+		</ConfigUI>
+		<States>
+			<State id="hue">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Hue (°)</TriggerLabel>
+				<ControlPageLabel>Hue (°)</ControlPageLabel>
+			</State>
+			<State id="saturation">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Saturation (%)</TriggerLabel>
+				<ControlPageLabel>Saturation (%)</ControlPageLabel>
+			</State>
+			<State id="colorRed">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Red Level (0-255)</TriggerLabel>
+				<ControlPageLabel>Red Level (0-255)</ControlPageLabel>
+			</State>
+			<State id="colorGreen">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Green Level (0-255)</TriggerLabel>
+				<ControlPageLabel>Green Level (0-255)</ControlPageLabel>
+			</State>
+			<State id="colorBlue">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Blue Level (0-255)</TriggerLabel>
+				<ControlPageLabel>Blue Level (0-255)</ControlPageLabel>
+			</State>
+			<State id="colorX">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>X Color Chromaticity</TriggerLabel>
+				<ControlPageLabel>X Color Chromaticity (CIE 1931)</ControlPageLabel>
+			</State>
+			<State id="colorY">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Y Color Chromaticity</TriggerLabel>
+				<ControlPageLabel>Y Color Chromaticity (CIE 1931)</ControlPageLabel>
+			</State>
+			<State id="colorTemp">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Color Temperature (K)</TriggerLabel>
+				<ControlPageLabel>Color Temperature (K)</ControlPageLabel>
+			</State>
+			<State id="colorMode">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Color Mode</TriggerLabel>
+				<ControlPageLabel>Color Mode</ControlPageLabel>
+			</State>
+			<State id="alertMode">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Alert Mode</TriggerLabel>
+				<ControlPageLabel>Alert Mode</ControlPageLabel>
+			</State>
+			<State id="effect">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Effect</TriggerLabel>
+				<ControlPageLabel>Effect</ControlPageLabel>
+			</State>
+			<State id="online">
+				<ValueType>Boolean</ValueType>
+				<TriggerLabel>Online</TriggerLabel>
+				<ControlPageLabel>Online</ControlPageLabel>
+			</State>
+		</States>
+	</Device>
+
+
+</Devices>

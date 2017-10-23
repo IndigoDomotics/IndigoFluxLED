@@ -1,0 +1,10 @@
+
+<PluginConfig>
+  <Field id="showDebugInfo" type="checkbox">
+		<Label>Enable debugging:</Label>
+		<Description>(not recommended)</Description>
+	</Field>
+	<Field type="label" id="gslbl">
+		<Label>2017 - GreenSky.co.uk</Label>
+	</Field>
+</PluginConfig>

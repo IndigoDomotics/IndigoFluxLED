@@ -1,0 +1,47 @@
+<Actions>
+  <Action id="setRGB" deviceFilter="self" uiPath="DeviceActions">
+		<Name>Set Red/Green/Blue Levels</Name>
+		<CallbackMethod>setRGB</CallbackMethod>
+		<ConfigUI>
+			
+			<Field id="rgbColor" type="colorpicker" defaultValue="=">
+				<Label>Color:</Label>
+				<CallbackMethod>rgbColorPickerUpdated</CallbackMethod>
+			</Field>
+			<Field id="labelRgbColor" type="label" alignWithControl="true" fontSize="small" fontColor="darkgray">
+				<Label>Click to pick a color.</Label>
+			</Field>
+			<Field id="red" type="textfield" defaultValue="255">
+				<Label>Red:</Label>
+				<CallbackMethod>rgbColorFieldUpdated</CallbackMethod>
+			</Field>
+			<Field id="labelRed" type="label" alignWithControl="true" fontSize="small" fontColor="darkgray">
+				<Label>(0 - 255)
+0 = red LEDs off
+255 = red LEDs on full</Label>
+			</Field>
+			<Field id="green" type="textfield" defaultValue="255">
+				<Label>Green:</Label>
+				<CallbackMethod>rgbColorFieldUpdated</CallbackMethod>
+			</Field>
+			<Field id="labelGreen" type="label" alignWithControl="true" fontSize="small" fontColor="darkgray">
+				<Label>(0 - 255)
+0 = green LEDs off
+255 = green LEDs on full</Label>
+			</Field>
+			<Field id="blue" type="textfield" defaultValue="255">
+				<Label>Blue:</Label>
+				<CallbackMethod>rgbColorFieldUpdated</CallbackMethod>
+			</Field>
+			<Field id="labelBlue" type="label" alignWithControl="true" fontSize="small" fontColor="darkgray">
+				<Label>(0 - 255)
+0 = blue LEDs off
+255 = blue LEDs on full</Label>
+			</Field>
+			
+			<Field id="description" type="textfield" hidden="true">
+				<Label/>
+			</Field>
+		</ConfigUI>
+	</Action>
+</Actions>
