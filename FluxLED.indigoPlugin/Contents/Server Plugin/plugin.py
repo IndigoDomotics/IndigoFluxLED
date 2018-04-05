@@ -12,6 +12,7 @@ import argparse
 import socket
 import time
 import datetime
+from colormath.color_objects import RGBColor, xyYColor, HSVColor
 # Note the "indigo" module is automatically imported and made available inside
 # our global name space by the host process.
 from flux_led import WifiLedBulb
@@ -111,6 +112,61 @@ class Plugin(indigo.PluginBase):
 		
 
 		device.updateStatesOnServer(keyValueList)
+
+	def rgbColorPickerUpdated(self, valuesDict, typeId, devId):
+		self.debugLog(u"Starting rgbColorPickerUpdated.")
+		self.debugLog(u"typeId: " + typeId + "\ndevId: " + unicode(devId) + "\nvaluesDict: " + unicode(valuesDict))
+		# Get the raw 3 byte, space-separated hex string from the color picker.
+		rgbHexList = valuesDict['rgbColor'].split()
+		# Assign the RGB values.
+		red = int(rgbHexList[0], 16)
+		green = int(rgbHexList[1], 16)
+		blue = int(rgbHexList[2], 16)
+		# Convert the RGB values to HSL/HSV for use in the HSB actions.
+		rgb = RGBColor(red, green, blue, rgb_type='wide_gamut_rgb')
+		hsb = rgb.convert_to('hsv')
+		hue = int(round(hsb.hsv_h * 1.0))
+		saturation = int(round(hsb.hsv_s * 100.0))
+		brightness = int(round(hsb.hsv_v * 100.0))
+		
+		# Assign the values to the appropriate valuesDict items.
+		valuesDict['red'] = red
+		valuesDict['green'] = green
+		valuesDict['blue'] = blue
+		valuesDict['hue'] = hue
+		valuesDict['saturation'] = saturation
+		valuesDict['brightness'] = brightness
+
+		# Can send a live update to the hardware here:
+		#    self.sendSetRGBWCommand(valuesDict, typeId, devId)
+
+		del valuesDict['rgbColor']
+		return (valuesDict)
+
+	def rgbColorFieldUpdated(self, valuesDict, typeId, devId):
+		self.debugLog(u"Starting rgbColorFieldUpdated.")
+		self.debugLog(u"typeId: " + typeId + "\ndevId: " + unicode(devId) + "\nvaluesDict: " + unicode(valuesDict))
+		valuesDict['rgbColor'] = self.calcRgbHexValsFromRgbLevels(valuesDict)
+
+		# Can send a live update to the hardware here:
+		#    self.sendSetRGBWCommand(valuesDict, typeId, devId)
+
+		del valuesDict['red']
+		del valuesDict['green']
+		del valuesDict['blue']
+		return (valuesDict)
+
+	# Set RGB Level Action
+	########################################
+	def setRGB(self, action, device):
+		self.debugLog(u"setRGB: device: " + device.name + ", action:\n" + unicode(action))
+
+		red = action.props.get('red', 0)
+		green = action.props.get('green', 0)
+		blue = action.props.get('blue', 0)
+		bulb = WifiLedBulb(device.address)
+		bulb.refreshState()
+		bulb.setRgb(red, green, blue)
 
 	# Dimmer/Relay Control Actions
 	########################################
@@ -238,14 +294,20 @@ class Plugin(indigo.PluginBase):
 				self.debugLog(u"device request status: (Unable to display action data due to error: " + str(e) + u")")
 			self.getBulbStatus(device.id)
 			# Log the new brightnss.
-			indigo.server.log(u"\"" + device.name + u"\" status request (received: " + str(device.states['brightnessLevel']) + u")", 'Sent Hue Lights')
+			indigo.server.log(u"\"" + device.name + u"\" status request (received: " + str(device.states['brightnessLevel']) + u")")
 
 		#### CATCH ALL #####
 		else:
 			indigo.server.log(u"Unhandled command \"%s\"" % (command))
 		pass
 
-	
+	def getBulbStatus(self, deviceId):
+		# Get device status.
+		
+		device = indigo.devices[deviceId]
+		bulb = WifiLedBulb(device.address)
+		bulb.refreshState()
+
 	def deviceCreated(self, newDev):
 		self.debugLog("Device Created")
 				
