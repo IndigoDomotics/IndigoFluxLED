@@ -30,7 +30,7 @@ class Plugin(indigo.PluginBase):
 	def runConcurrentThread(self):
 		self.debugLog(u"runConcurrentThread called")
 		while self.runUpdateLoop:
-			self.debugLog(u"runConcurrentThread loop")
+			#self.debugLog(u"runConcurrentThread loop")
 			for	dev in indigo.devices.iter("self"):
 				self.updateStatus(dev)
 
@@ -57,7 +57,7 @@ class Plugin(indigo.PluginBase):
 		self.updateStatus(device)
 
 	def updateStatus(self, device):
-		self.debugLog(u"Updating device: " + device.name)	
+		#self.debugLog(u"Updating device: " + device.name)	
 		
 		try:
 			keyValueList = []
@@ -67,16 +67,19 @@ class Plugin(indigo.PluginBase):
 			currentRGBW = bulb.getRgbw()
 			device.pluginProps["supportsWhite"] = bulb.rgbwcapable
 			device.pluginProps["supportsWhiteTemperature"] = False
-			self.debugLog(str(currentRGBW))
+			#self.debugLog(str(currentRGBW))
 			channelKeys = []
 			
 			if bulb.rgbwcapable:
 				channelKeys.extend(['whiteLevel'])
+
+			brightness= int(round(RGBColor(currentRGBW[0],currentRGBW[1],currentRGBW[2]).convert_to('hsv').hsv_v*100))
 				
 			keyValueList.append({'key':"onOffState", 'value':bulb.isOn()}) 
 			keyValueList.append({'key':"redLevel", 'value':currentRGBW[0]}) 
 			keyValueList.append({'key':"greenLevel", 'value':currentRGBW[1]})
 			keyValueList.append({'key':"blueLevel", 'value':currentRGBW[2]})
+			keyValueList.append({'key':'brightnessLevel','value':brightness})
 			if bulb.rgbwcapable:
 				keyValueList.append({'key':"whiteLevel", 'value':currentRGBW[3]})	
 
@@ -95,7 +98,7 @@ class Plugin(indigo.PluginBase):
 		currentRGBW = bulb.getRgbw()
 		device.pluginProps["supportsWhite"] = bulb.rgbwcapable
 		device.pluginProps["supportsWhiteTemperature"] = False
-		self.debugLog(str(currentRGBW))
+		#self.debugLog(str(currentRGBW))
 		channelKeys = []
 		
 		if bulb.rgbwcapable:
@@ -172,13 +175,13 @@ class Plugin(indigo.PluginBase):
 	########################################
 	def actionControlDimmerRelay(self, action, device):
 		try:
-			self.debugLog(u"actionControlDimmerRelay called for device " + device.name + u". action: " + str(action) )
+			self.debugLog(u"actionControlDimmerRelay called for device " + device.name + u". actionValue: " + str(action) )
 		except Exception, e:
 			self.debugLog(u"actionControlDimmerRelay called for device " + device.name + u". (Unable to display action or device data due to error: " + str(e) + u")")
 		
 		currentBrightness = device.states['brightnessLevel']
 		currentOnState = device.states['onOffState']
-
+		self.debugLog("current brightness: " + str(currentBrightness))
 		bulb = WifiLedBulb(device.address)
 		bulb.refreshState()
 		self.debugLog(str(bulb))
@@ -204,9 +207,9 @@ class Plugin(indigo.PluginBase):
 		##### SET COLOR LEVELS #####
 		elif command == indigo.kDimmerRelayAction.SetColorLevels:
 			try:
-				self.debugLog(u"device request status:\n%s" % action)
+				self.debugLog(u"device set color levels:\n%s" % action)
 			except Exception, e:
-				self.debugLog(u"device request status: (Unable to display action data due to error: " + str(e) + u")")
+				self.debugLog(u"device set color levels: (Unable to display action data due to error: " + str(e) + u")")
 			
 			actionColorVals = action.actionValue
 
@@ -224,7 +227,7 @@ class Plugin(indigo.PluginBase):
 			isGenericInterface = False
 			if 'redLevel' in actionColorVals and 'greenLevel' in actionColorVals and 'blueLevel' in actionColorVals and 'whiteLevel' in actionColorVals and 'whiteTemperature' in actionColorVals:
 				isGenericInterface = True
-				bulb.set
+				self.debugLog(u"Generic Interface.")
 				if actionColorVals['redLevel'] == 100.0 and actionColorVals['greenLevel'] == 100.0 and actionColorVals['blueLevel'] == 100.0:
 					useHSB = True
 					if actionColorVals['whiteLevel'] == 100.0:
@@ -233,6 +236,8 @@ class Plugin(indigo.PluginBase):
 				else:
 					useRGB = True
 
+			self.debugLog(u"Use RGB:" + str(useRGB))
+			self.debugLog(u"Use HSB:" + str(useHSB))
 			# Construct a list of channel keys that are possible for what this device
 			# supports. It may not support RGB or may not support white levels, for
 			# example, depending on how the device's properties (SupportsColor, SupportsRGB,
@@ -278,8 +283,10 @@ class Plugin(indigo.PluginBase):
 						
 						keyValueList.append({'key':channel, 'value':brightness})
 
-		
-			bulb.setRgbw(redLevel, greenLevel, blueLevel, whiteLevel)
+			
+
+			self.debugLog(u"Setting RGBW: " + str(redLevel) + "|" + str(greenLevel) + "|" +  str(blueLevel) + "|" + str(whiteLevel) )
+			bulb.setRgbw(redLevel, greenLevel, blueLevel, whiteLevel)#, True,currentBrightness)
 		
 		
 			# Tell the Indigo Server to update the color level states:
@@ -295,7 +302,9 @@ class Plugin(indigo.PluginBase):
 			self.getBulbStatus(device.id)
 			# Log the new brightnss.
 			indigo.server.log(u"\"" + device.name + u"\" status request (received: " + str(device.states['brightnessLevel']) + u")")
-
+		elif command == indigo.kDimmerRelayAction.SetBrightness:
+			self.debugLog(u"SetBrightness:")
+			self.setBrightness(action, device)
 		#### CATCH ALL #####
 		else:
 			indigo.server.log(u"Unhandled command \"%s\"" % (command))
@@ -307,14 +316,39 @@ class Plugin(indigo.PluginBase):
 		device = indigo.devices[deviceId]
 		bulb = WifiLedBulb(device.address)
 		bulb.refreshState()
+		self.debugLog(str(bulb))
 
 	def deviceCreated(self, newDev):
 		self.debugLog("Device Created")
 				
+	# Set Brightness
+	########################################
+	def setBrightness(self, action, device):
+		self.debugLog(u"setBrightness: device: " + device.name + u", action:\n" + unicode(action))
+		bulb = WifiLedBulb(device.address)
+		bulb.refreshState()
+		
+		# get RGB
+		rgb = bulb.getRgb()
+		self.debugLog("RGB Read as: " + str(rgb))
+		r=rgb[0]
+		g=rgb[1]
+		b=rgb[2]
+		#Convert RGB to HSV
+		#hsb = RGBColor(red, green, blue, rgb_type='wide_gamut_rgb').convert_to('hsv')
+		#hue = int(round(hsb.hsv_h * 1.0))
+		#saturation = int(round(hsb.hsv_s * 100.0))
+		#brightness = int(round(hsb.hsv_v * 100.0))
+		#Change V
+		
+		#Update bulb
+		self.debugLog(u"Setting RGB: " + str(r) + "|" + str(g) + "|" +  str(b)  )
+			
+		bulb.setRgb(r,g,b,True,action.actionValue * 2.55)
 
 	def deviceUpdated(self, origDev, newDev):
 		# call the base's implementation first just to make sure all the right things happen elsewhere
-		self.debugLog("Device Updated")
+		#self.debugLog("Device Updated")
 		indigo.PluginBase.deviceUpdated(self, origDev, newDev)
 		
 
