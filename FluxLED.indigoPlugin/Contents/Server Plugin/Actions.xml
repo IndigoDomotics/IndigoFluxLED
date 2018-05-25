@@ -4,12 +4,12 @@
 		<CallbackMethod>setRGB</CallbackMethod>
 		<ConfigUI>
 			
-			<Field id="rgbColor" type="colorpicker" defaultValue="=">
+			<Field id="rgbColor" type="Colorpicker" defaultValue="=">
 				<Label>Color:</Label>
 				<CallbackMethod>rgbColorPickerUpdated</CallbackMethod>
 			</Field>
 			<Field id="labelRgbColor" type="label" alignWithControl="true" fontSize="small" fontColor="darkgray">
-				<Label>Click to pick a color.</Label>
+				<Label>Click to pick a Color.</Label>
 			</Field>
 			<Field id="red" type="textfield" defaultValue="255">
 				<Label>Red:</Label>
@@ -42,6 +42,51 @@
 			<Field id="description" type="textfield" hidden="true">
 				<Label/>
 			</Field>
+		</ConfigUI>
+	</Action>
+  <Action id="setPreset" deviceFilter="self" uiPath="DeviceActions">
+		<Name>Use Preset Pattern</Name>
+		<CallbackMethod>setPreset</CallbackMethod>
+		<ConfigUI>
+			
+			<Field id="preset" type="menu" defaultValue="0x25">
+				<Label>Color:</Label>
+				<List>
+				<Option value="0x25">Seven Color Cross Fade</Option>
+				<Option value="0x26">Red Gradual Change</Option>
+				<Option value="0x27">Green Gradual Change</Option>
+				<Option value="0x28">Blue Gradual Change</Option>
+				<Option value="0x29">Yellow Gradual Change</Option>
+				<Option value="0x2a">Cyan Gradual Change</Option>
+				<Option value="0x2b">Purple Gradual Change</Option>
+				<Option value="0x2c">White Gradual Change</Option>
+				<Option value="0x2d">Red Green Cross Fade</Option>
+				<Option value="0x2e">Red Blue Cross Fade</Option>
+				<Option value="0x2f">Green Blue Cross Fade</Option>
+				<Option value="0x30">Seven Color Strobe Flash</Option>	
+				<Option value="0x31">Red Strobe Flash</Option>
+				<Option value="0x32">Green Strobe Flash</Option>
+				<Option value="0x33">Blue Strobe Flash</Option>
+				<Option value="0x34">Yellow Strobe Flash</Option>
+				<Option value="0x35">Cyan Strobe Flash</Option>
+				<Option value="0x36">Purple Strobe Flash</Option>
+				<Option value="0x37">White Strobe Flash</Option>
+				<Option value="0x38">Seven Color Jumping</Option>
+
+	 
+				</List>
+			</Field>
+			<Field id="labelRgbColor" type="label" alignWithControl="true" fontSize="small" fontColor="darkgray">
+				<Label>Pick a preset</Label>
+			</Field>
+			<Field id="speed" type="textfield" defaultValue="50">
+				<Label>Speed:</Label>
+				<CallbackMethod>rgbColorFieldUpdated</CallbackMethod>
+			</Field>
+			<Field id="labelSpeed" type="label" alignWithControl="true" fontSize="small" fontColor="darkgray">
+				<Label>(0 - 100)</Label>
+			</Field>
+			
 		</ConfigUI>
 	</Action>
 </Actions>

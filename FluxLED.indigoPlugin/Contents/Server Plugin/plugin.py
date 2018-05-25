@@ -1,6 +1,4 @@
-
 import indigo
-
 import os
 import sys
 import signal
@@ -65,6 +63,7 @@ class Plugin(indigo.PluginBase):
 			bulb = WifiLedBulb(device.address)
 			keyValueList.append({'key':"online", 'value':True}) 
 			currentRGBW = bulb.getRgbw()
+		
 			device.pluginProps["supportsWhite"] = bulb.rgbwcapable
 			device.pluginProps["supportsWhiteTemperature"] = False
 			#self.debugLog(str(currentRGBW))
@@ -168,8 +167,27 @@ class Plugin(indigo.PluginBase):
 		green = action.props.get('green', 0)
 		blue = action.props.get('blue', 0)
 		bulb = WifiLedBulb(device.address)
-		bulb.refreshState()
+		bulb.mode = 'color'
+		bulb.pattern_code = 0x61
+
+		
+		if red+green+blue >0:
+			bulb.turnOn()
 		bulb.setRgb(red, green, blue)
+
+	# Set Preset Action
+	########################################
+	def setPreset(self, action, device):
+		self.debugLog(u"setPreset: device: " + device.name + ", action:\n" + unicode(action))
+
+		preset = int(action.props.get('preset', 0),0)
+		speed = int(action.props.get('speed', 0),0)
+	
+		bulb = WifiLedBulb(device.address)
+		bulb.refreshState()
+		
+		bulb.setPresetPattern(preset, speed)
+		bulb.turnOn()
 
 	# Dimmer/Relay Control Actions
 	########################################
@@ -286,6 +304,8 @@ class Plugin(indigo.PluginBase):
 			
 
 			self.debugLog(u"Setting RGBW: " + str(redLevel) + "|" + str(greenLevel) + "|" +  str(blueLevel) + "|" + str(whiteLevel) )
+			
+			bulb.mode = 'color'
 			bulb.setRgbw(redLevel, greenLevel, blueLevel, whiteLevel)#, True,currentBrightness)
 		
 		
