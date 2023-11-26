@@ -1,8 +1,7 @@
 # Note the "indigo" module is automatically imported and made available inside
 # our global name space by the host process.
 from flux_led import WifiLedBulb
-from colormath.color_objects import RGBColor, xyYColor, HSVColor
-
+from colormath.color_objects import sRGBColor, xyYColor, HSVColor
 
 class Plugin(indigo.PluginBase):
     ########################################
@@ -58,7 +57,7 @@ class Plugin(indigo.PluginBase):
             if bulb.rgbwcapable:
                 channelKeys.extend(['whiteLevel'])
 
-            brightness = int(round(RGBColor(currentRGBW[0], currentRGBW[1], currentRGBW[2]).convert_to('hsv').hsv_v * 100))
+            brightness = int(round(sRGBColor(currentRGBW[0], currentRGBW[1], currentRGBW[2]).convert_to('hsv').hsv_v * 100))
 
             keyValueList.append({'key': "onOffState", 'value': bulb.isOn()})
             keyValueList.append({'key': "redLevel", 'value': currentRGBW[0]})
@@ -104,7 +103,7 @@ class Plugin(indigo.PluginBase):
         green = int(rgbHexList[1], 16)
         blue = int(rgbHexList[2], 16)
         # Convert the RGB values to HSL/HSV for use in the HSB actions.
-        rgb = RGBColor(red, green, blue, rgb_type='wide_gamut_rgb')
+        rgb = sRGBColor(red, green, blue, rgb_type='wide_gamut_rgb')
         hsb = rgb.convert_to('hsv')
         hue = int(round(hsb.hsv_h * 1.0))
         saturation = int(round(hsb.hsv_s * 100.0))
