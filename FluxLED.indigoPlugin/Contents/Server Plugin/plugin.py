@@ -69,11 +69,11 @@ class Plugin(indigo.PluginBase):
 
             device.updateStatesOnServer(keyValueList)
         except Exception as e:
-            self.errorLog("Error updating device: " + device.name + ". Is the IP address correct?")
+            self.errorLog(f"Error updating device: {device.name}. Is the IP address correct: {device.address}?")
 
         keyValueList = []
 
-        bulb = WifiLedBulb(device.address)
+        bulb = WifiLedBulb(device.address, timeout=20)
         keyValueList.append({'key': "online", 'value': True})
         currentRGBW = bulb.getRgbw()
         device.pluginProps["supportsWhite"] = bulb.rgbwcapable
@@ -144,7 +144,7 @@ class Plugin(indigo.PluginBase):
         red = action.props.get('red', 0)
         green = action.props.get('green', 0)
         blue = action.props.get('blue', 0)
-        bulb = WifiLedBulb(device.address)
+        bulb = WifiLedBulb(device.address, timeout=20)
         # bulb.mode = 'color'
         bulb.pattern_code = 0x61
 
