@@ -1,4 +1,17 @@
 """Init file for Flux LED"""
-from .__main__ import PresetPattern, WifiLedBulb, BulbScanner, utils
+from .base_device import DeviceType, DeviceUnavailableException
+from .device import WifiLedBulb
+from .pattern import PresetPattern
+from .scanner import BulbScanner
+from .timer import LedTimer
+from .utils import utils
 
-__all__ = ['PresetPattern', 'WifiLedBulb', 'BulbScanner', 'utils']
+__all__ = [
+    "DeviceType",
+    "PresetPattern",
+    "LedTimer",
+    "WifiLedBulb",
+    "BulbScanner",
+    "utils",
+    "DeviceUnavailableException",
+]
