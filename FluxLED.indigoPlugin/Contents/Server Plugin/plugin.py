@@ -46,7 +46,7 @@ class Plugin(indigo.PluginBase):
         try:
             keyValueList = []
 
-            bulb = WifiLedBulb(device.address)
+            bulb = WifiLedBulb(device.address, timeout=20)
             keyValueList.append({'key': "online", 'value': True})
             currentRGBW = bulb.getRgbw()
 
@@ -161,7 +161,7 @@ class Plugin(indigo.PluginBase):
         preset = int(action.props.get('preset', 0), 0)
         speed = int(action.props.get('speed', 0), 0)
 
-        bulb = WifiLedBulb(device.address)
+        bulb = WifiLedBulb(device.address, timeout=20)
         bulb.refreshState()
 
         bulb.setPresetPattern(preset, speed)
@@ -180,7 +180,7 @@ class Plugin(indigo.PluginBase):
         currentBrightness = device.states['brightnessLevel']
         currentOnState = device.states['onOffState']
         self.debugLog("current brightness: " + str(currentBrightness))
-        bulb = WifiLedBulb(device.address)
+        bulb = WifiLedBulb(device.address, timeout=20)
         bulb.refreshState()
         self.debugLog(str(bulb))
         # Get key variables
@@ -294,7 +294,7 @@ class Plugin(indigo.PluginBase):
         # Get device status.
 
         device = indigo.devices[deviceId]
-        bulb = WifiLedBulb(device.address)
+        bulb = WifiLedBulb(device.address, timeout=20)
         bulb.refreshState()
         self.debugLog(str(bulb))
 
@@ -305,7 +305,7 @@ class Plugin(indigo.PluginBase):
     ########################################
     def setBrightness(self, action, device):
         self.debugLog(f"setBrightness: device: {device.name}, action: {action}")
-        bulb = WifiLedBulb(device.address)
+        bulb = WifiLedBulb(device.address, timeout=20)
         bulb.refreshState()
 
         # get RGB
